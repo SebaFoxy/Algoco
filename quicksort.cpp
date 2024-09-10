@@ -11,8 +11,7 @@ int partition(vector<int> &vec, int low, int high) {
     // Selecciona el ultimo elemento como pivote
     int pivot = vec[high];
 
-    // Index of elemment just before the last element
-    // It is used for swapping
+    // Indice del elemento justo antes del último elemento
     int i = (low - 1);
 
     for (int j = low; j <= high - 1; j++) {
@@ -25,25 +24,21 @@ int partition(vector<int> &vec, int low, int high) {
         }
     }
 
-    // Put pivot to its position
+    // Coloca el pivote el pivote en la posicion que le toca
     swap(vec[i + 1], vec[high]);
 
-    // Return the point of partition
+    // Retorna el indice de la particion
     return (i + 1);
 }
 
 void quickSort(vector<int> &vec, int low, int high) {
 
-    // Base case: This part will be executed till the starting
-    // index low is lesser than the ending index high
     if (low < high) {
 
-        // p is partitioning index, arr[p] is now at
-        // right place
+        // p es el índice de partición, después de la llamada, vec[p] está en su lugar correcto
         int p = partition(vec, low, high);
 
-        // Separately sort elements before and after the
-        // partition index p
+        // Ordena los elementos antes y despues de p recursivamente
         quickSort(vec, low, p - 1);
         quickSort(vec, p + 1, high);
     }
@@ -104,4 +99,5 @@ int main() {
     cout << desce/pruebas << endl;
 
 }
+
 
