@@ -149,27 +149,29 @@ void strassen(vector< vector<int> > &matrixA,
 }
 
 int main() {
-    int n = 1000; // Tamaño de las matrices
-    vector<vector<int>> A(n, vector<int>(n, 0));
-    vector<vector<int>> B(n, vector<int>(n, 0));
-    vector< vector<int> > matrixC(n, vector<int> (n, 0));
-
-    srand(time(0)); // Inicializa el generador de números aleatorios
-
+    int n = 20;   //Tamaño de matriz cuadrada
+    double total1 = 0; 
+    int pruebas = 30;   //Cantidad de pruebas
     
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {         //LLenado de matrices con
-            A[i][j] = rand() % 100;           //numeros randoms
-            B[i][j] = rand() % 100;  
+    for(int c=0;c<pruebas;c++){
+ 
+        vector<vector<int>> A(n, vector<int>(n, 0));
+        vector<vector<int>> B(n, vector<int>(n, 0));    //Se definen los vectores a usar
+        vector<vector<int>> C(n, vector<int>(n, 0));
+        srand(time(0));
+
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                A[i][j] = rand() % 100;     //LLenado de matrices con
+                B[i][j] = rand() % 100;     //numeros randoms
+            }
         }
+        auto s1 = high_resolution_clock::now();
+        strassen(A,B,C,n);                          //Calcular tiempo que demora la operacion
+        auto e1 = high_resolution_clock::now();
+        duration<double,milli> d1 = e1 - s1;
+        total1 += d1.count();               //Lo suma al total
     }
-    
-    
-    auto s1 = high_resolution_clock::now();
-    strassen(A,B,matrixC,n);                  //Calcular tiempo que demora la operacion
-    auto e1 = high_resolution_clock::now();
-    duration<double,milli> d1 = e1 - s1;
-    cout << "Tiempo de ejecución: " << d1.count() << " milli" << endl;
-    
+    cout<<total1/pruebas<<endl;             //Promedio tiempo
 }
 
