@@ -33,6 +33,8 @@ int main() {
     int pruebas = 5;     //Numeros de pruebas a hacer 
     vector<int> ra(maximo);
 
+    //Warning: No se probaron datos de 10^6 hacia arriba debido a que demoraban mucho
+
     random_device rd;
     mt19937 gen(rd());
     uniform_int_distribution<> dis(1, maximo);
