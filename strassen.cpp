@@ -24,7 +24,7 @@ void add(vector< vector<int> > &matrixA,
 void sub(vector< vector<int> > &matrixA, 
          vector< vector<int> > &matrixB, 
          vector< vector<int> > &matrixC, unsigned int mSize) {
-    // Recorre cada elemento de las matrices y resta los valores de matrixB de matrixA
+    
     for (int i = 0; i < mSize; i++) {
         for (int j = 0; j < mSize; j++) {
             matrixC[i][j] = matrixA[i][j] - matrixB[i][j];
@@ -149,24 +149,24 @@ void strassen(vector< vector<int> > &matrixA,
 }
 
 int main() {
-    int n = 1024; // Tamaño de las matrices
+    int n = 1000; // Tamaño de las matrices
     vector<vector<int>> A(n, vector<int>(n, 0));
     vector<vector<int>> B(n, vector<int>(n, 0));
     vector< vector<int> > matrixC(n, vector<int> (n, 0));
 
     srand(time(0)); // Inicializa el generador de números aleatorios
 
-    // Llena las matrices A y B con valores aleatorios entre 0 y 99
+    
     for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            A[i][j] = rand() % 100;
+        for (int j = 0; j < n; ++j) {         //LLenado de matrices con
+            A[i][j] = rand() % 100;           //numeros randoms
             B[i][j] = rand() % 100;  
         }
     }
     
-    // Mide el tiempo de ejecución de la multiplicación de matrices usando Strassen
+    
     auto s1 = high_resolution_clock::now();
-    strassen(A,B,matrixC,n);
+    strassen(A,B,matrixC,n);                  //Calcular tiempo que demora la operacion
     auto e1 = high_resolution_clock::now();
     duration<double,milli> d1 = e1 - s1;
     cout << "Tiempo de ejecución: " << d1.count() << " milli" << endl;
