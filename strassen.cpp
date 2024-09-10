@@ -7,12 +7,12 @@
 using namespace std;
 using namespace chrono;
 
-const string OUTPUT_FILE_NAME = "output.txt";
 
-// add two matrices
+// Función para sumar dos matrices
 void add(vector< vector<int> > &matrixA, 
          vector< vector<int> > &matrixB, 
          vector< vector<int> > &matrixC, unsigned int mSize) {
+    // Recorre cada elemento de las matrices y suma sus valores
     for (int i = 0; i < mSize; i++) {
         for (int j = 0; j < mSize; j++) {
             matrixC[i][j] = matrixA[i][j] + matrixB[i][j];
@@ -20,10 +20,11 @@ void add(vector< vector<int> > &matrixA,
     }
 }
 
-// subtract two matrices
+// Función para restar dos matrices
 void sub(vector< vector<int> > &matrixA, 
-        vector< vector<int> > &matrixB, 
-        vector< vector<int> > &matrixC, unsigned int mSize) {
+         vector< vector<int> > &matrixB, 
+         vector< vector<int> > &matrixC, unsigned int mSize) {
+    // Recorre cada elemento de las matrices y resta los valores de matrixB de matrixA
     for (int i = 0; i < mSize; i++) {
         for (int j = 0; j < mSize; j++) {
             matrixC[i][j] = matrixA[i][j] - matrixB[i][j];
@@ -31,25 +32,23 @@ void sub(vector< vector<int> > &matrixA,
     }   
 }
 
-
-
-
-// recursive strassen matrix multiplier
+// Función recursiva del algoritmo de multiplicación de matrices de Strassen
 void strassenR(vector< vector<int> > &matrixA,
             vector< vector<int> > &matrixB,
             vector< vector<int> > &matrixC,
             unsigned int mSize) {
 
-    // recursive base case
+    // Caso base: si la matriz es de tamaño 1x1, simplemente multiplica los dos elementos
     if (mSize == 1) {
         matrixC[0][0] = matrixA[0][0] * matrixB[0][0];
         return;
     }
     else {
+        // Divide la matriz en submatrices de tamaño más pequeño
         int newMSize = mSize / 2;
         vector<int> innerVector(newMSize, 0);
 
-        // initialize matrices
+        // Inicializa las submatrices de A, B, C y las matrices temporales necesarias para Strassen
         vector< vector<int> > matrixA11(newMSize, innerVector),
                             matrixA12(newMSize, innerVector),
                             matrixA21(newMSize, innerVector),
@@ -82,7 +81,7 @@ void strassenR(vector< vector<int> > &matrixA,
                             tempMatrixA(newMSize, innerVector),
                             tempMatrixB(newMSize, innerVector);
 
-        // divide matrices into 4 submatrices
+        // Divide las matrices A y B en 4 submatrices cada una
         for (int i = 0; i < newMSize; i++) {
             for (int j = 0; j < newMSize; j++) {
                 matrixA11[i][j] = matrixA[i][j];
@@ -97,74 +96,38 @@ void strassenR(vector< vector<int> > &matrixA,
             }
         }
 
-        // s1 = b12 - b22
-        sub(matrixB12, matrixB22, s1, newMSize);
-        
-        // s2 = a11 + a12
-        add(matrixA11, matrixA12, s2, newMSize);
+        // Calcula las matrices intermedias S y P de acuerdo con el algoritmo de Strassen
+        sub(matrixB12, matrixB22, s1, newMSize); // s1 = b12 - b22
+        add(matrixA11, matrixA12, s2, newMSize); // s2 = a11 + a12
+        add(matrixA21, matrixA22, s3, newMSize); // s3 = a21 + a22
+        sub(matrixB21, matrixB11, s4, newMSize); // s4 = b21 - b11
+        add(matrixA11, matrixA22, s5, newMSize); // s5 = a11 + a22
+        add(matrixB11, matrixB22, s6, newMSize); // s6 = b11 + b22
+        sub(matrixA12, matrixA22, s7, newMSize); // s7 = a12 - a22
+        add(matrixB21, matrixB22, s8, newMSize); // s8 = b21 + b22
+        sub(matrixA11, matrixA21, s9, newMSize); // s9 = a11 - a21
+        add(matrixB11, matrixB12, s10, newMSize);// s10 = b11 + b12
 
-        // s3 = a21 + a22
-        add(matrixA21, matrixA22, s3, newMSize);
+        // Calcula los productos P utilizando las submatrices y las matrices intermedias S
+        strassenR(matrixA11, s1, p1, newMSize); // p1 = a11 * s1
+        strassenR(s2, matrixB22, p2, newMSize); // p2 = s2 * b22
+        strassenR(s3, matrixB11, p3, newMSize); // p3 = s3 * b11
+        strassenR(matrixA22, s4, p4, newMSize); // p4 = a22 * s4
+        strassenR(s5, s6, p5, newMSize); // p5 = s5 * s6
+        strassenR(s7, s8, p6, newMSize); // p6 = s7 * s8
+        strassenR(s9, s10, p7, newMSize);// p7 = s9 * s10
 
-        // s4 = b21 - b11
-        sub(matrixB21, matrixB11, s4, newMSize);
-        
-        // s5 = a11 + a22
-        add(matrixA11, matrixA22, s5, newMSize);
-        
-        // s6 = b11 + b22
-        add(matrixB11, matrixB22, s6, newMSize);
+        // Calcula las submatrices C usando los productos P
+        add(p5, p4, tempMatrixA, newMSize);
+        add(tempMatrixA, p6, tempMatrixB, newMSize);
+        sub(tempMatrixB, p2, matrixC11, newMSize); // c11 = p5 + p4 + p6 - p2
+        add(p1, p2, matrixC12, newMSize);          // c12 = p1 + p2
+        add(p3, p4, matrixC21, newMSize);          // c21 = p3 + p4
+        add(p5, p1, tempMatrixA, newMSize);
+        sub(tempMatrixA, p3, tempMatrixB, newMSize);
+        sub(tempMatrixB, p7, matrixC22, newMSize); // c22 = p5 + p1 - p3 - p7
 
-        // s7 = a12 - a22
-        sub(matrixA12, matrixA22, s7, newMSize);
-
-        // s8 = b21 + b22
-        add(matrixB21, matrixB22, s8, newMSize);
-
-        // s9 = a11 - a21
-        sub(matrixA11, matrixA21, s9, newMSize);
-
-        // s10 = b11 + b12
-        add(matrixB11, matrixB12, s10, newMSize);
-
-        // p1 = a11 * s1
-        strassenR(matrixA11, s1, p1, newMSize);
-
-        // p2 = s2 * b22
-        strassenR(s2, matrixB22, p2, newMSize);
-
-        // p3 = s3 * b11
-        strassenR(s3, matrixB11, p3, newMSize);
-
-        // p4 = a22 * s4
-        strassenR(matrixA22, s4, p4, newMSize);
-
-        // p5 = s5 * s6
-        strassenR(s5, s6, p5, newMSize); 
-
-        // p6 = s7 * s8
-        strassenR(s7, s8, p6, newMSize);
-
-        // p7 = s9 * s10
-        strassenR(s9, s10, p7, newMSize);
-
-        // c11 = p5 + p4 - p2 + p6
-        add(p5, p4, tempMatrixA, newMSize); // p5 + p4
-        add(tempMatrixA, p6, tempMatrixB, newMSize); // (p5 + p4) + p6
-        sub(tempMatrixB, p2, matrixC11, newMSize); // (p5 + p4 + p6) - p2
-
-        // c12 = p1 + p2
-        add(p1, p2, matrixC12, newMSize);
-
-        // c21 = p3 + p4
-        add(p3, p4, matrixC21, newMSize);
-
-        // c22 = p5 + p1 - p3 + p7
-        add(p5, p1, tempMatrixA, newMSize); // p5 + p1
-        sub(tempMatrixA, p3, tempMatrixB, newMSize); // (p5 + p1) - p3
-        sub(tempMatrixB, p7, matrixC22, newMSize); // (p5 + p1 - p3) - p7
-
-        // group into matrixC
+        // Combina las submatrices C en una sola matriz C
         for (int i = 0; i < newMSize ; i++) {
             for (int j = 0 ; j < newMSize ; j++) {
                 matrixC[i][j] = matrixC11[i][j];
@@ -173,35 +136,27 @@ void strassenR(vector< vector<int> > &matrixA,
                 matrixC[i + newMSize][j + newMSize] = matrixC22[i][j];
             }
         }
-
-        // print s values to console for matrices of n = 2
-        if (mSize == 2) {
-      
-        }
     }
 }
 
-// call recursive function
+// Llama a la función recursiva de Strassen
 void strassen(vector< vector<int> > &matrixA, 
               vector< vector<int> > &matrixB, 
               vector< vector<int> > &matrixC,
               unsigned int mSize) {
     
-    strassenR(matrixA, matrixB, matrixC, mSize);
-    
-    
+    strassenR(matrixA, matrixB, matrixC, mSize); 
 }
 
-
 int main() {
-    int n = 1024;
+    int n = 1024; // Tamaño de las matrices
     vector<vector<int>> A(n, vector<int>(n, 0));
     vector<vector<int>> B(n, vector<int>(n, 0));
     vector< vector<int> > matrixC(n, vector<int> (n, 0));
-    vector<int> rowVector(n);
 
-    srand(time(0));
+    srand(time(0)); // Inicializa el generador de números aleatorios
 
+    // Llena las matrices A y B con valores aleatorios entre 0 y 99
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
             A[i][j] = rand() % 100;
@@ -209,6 +164,7 @@ int main() {
         }
     }
     
+    // Mide el tiempo de ejecución de la multiplicación de matrices usando Strassen
     auto s1 = high_resolution_clock::now();
     strassen(A,B,matrixC,n);
     auto e1 = high_resolution_clock::now();
@@ -216,3 +172,4 @@ int main() {
     cout << "Tiempo de ejecución: " << d1.count() << " milli" << endl;
     
 }
+
