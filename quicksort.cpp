@@ -48,7 +48,7 @@ void quickSort(vector<int> &vec, int low, int high) {
 
 
 int main() {
-    int maximo = 100000000; //Largo del vector
+    int maximo = 100; //Largo del vector
     double azar = 0;   //Total de las pruebas con numeros ordenados al azar
     double ascen = 0;   //Total de las pruebas con numeros ordenados ascendentemente
     double desce = 0;   //Total de las pruebas con numeros ordenados descendentemente
@@ -76,7 +76,7 @@ int main() {
         }
     
         auto s2 = high_resolution_clock::now();
-        //quickSort(ra,0,maximo-1);                  //QuickSort ordenado ascendentemente
+        quickSort(ra,0,maximo-1);                  //QuickSort ordenado ascendentemente
         auto e2 = high_resolution_clock::now();
         duration<double,milli> d2 = e2 - s2;
         
@@ -88,7 +88,7 @@ int main() {
 
         }
         auto s3 = high_resolution_clock::now();
-        //quickSort(ra,0,maximo-1);                  //QuickSort ordenado descendentemente
+        quickSort(ra,0,maximo-1);                  //QuickSort ordenado descendentemente
         auto e3 = high_resolution_clock::now();
         duration<double,milli> d3 = e3 - s3;
     
