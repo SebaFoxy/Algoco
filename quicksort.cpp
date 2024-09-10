@@ -54,6 +54,8 @@ int main() {
     double desce = 0;   //Total de las pruebas con numeros ordenados descendentemente
     int pruebas = 3;     //Numeros de pruebas a hacer 
     vector<int> ra(maximo);
+    
+    //Warning: Para casos de 10^6 hacia arriba, comentar linea 81 y 93 ya que son los casos que demoraban demasiado
 
     random_device rd;
     mt19937 gen(rd());
